@@ -20,7 +20,10 @@ import (
 // @name X-API-Key
 func main() {
 	cfg := config.Load()
-	a := app.New()
+	a, err := app.New(cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	r, err := router.New(cfg, a)
 	if err != nil {

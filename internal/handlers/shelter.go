@@ -3,7 +3,9 @@ package handlers
 import (
 	"net/http"
 
-	"cp_lab1/internal/models"
+	"cp_lab1/internal/const_errors"
+	"cp_lab1/internal/dto"
+	"cp_lab1/internal/mapper"
 	"cp_lab1/internal/repositories"
 
 	"github.com/gin-gonic/gin"
@@ -25,17 +27,17 @@ func NewShelterHandler(sr repositories.ShelterRepo, cr repositories.CatRepo) *Sh
 // @Summary Get all shelters
 // @Tags shelters
 // @Produce json
-// @Success 200 {array} models.Shelter
-// @Failure 500 {object} models.ErrorResponse
+// @Success 200 {array} dto.ShelterResponse
+// @Failure 500 {object} dto.ErrorResponse
 // @Router /shelters [get]
 func (sh *ShelterHandler) GetAll(c *gin.Context) {
 	shelters, err := sh.shelterRepo.GetAll()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		respondRepositoryError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, shelters)
+	c.JSON(http.StatusOK, mapper.ShelterResponses(shelters))
 }
 
 // GetByID godoc
@@ -43,10 +45,10 @@ func (sh *ShelterHandler) GetAll(c *gin.Context) {
 // @Tags shelters
 // @Produce json
 // @Param id path int true "Shelter ID"
-// @Success 200 {object} models.Shelter
-// @Failure 400 {object} models.ErrorResponse
-// @Failure 404 {object} models.ErrorResponse
-// @Failure 500 {object} models.ErrorResponse
+// @Success 200 {object} dto.ShelterResponse
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 404 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
 // @Router /shelters/{id} [get]
 func (sh *ShelterHandler) GetByID(c *gin.Context) {
 	id, valid := idParam(c)
@@ -56,11 +58,11 @@ func (sh *ShelterHandler) GetByID(c *gin.Context) {
 
 	shelter, err := sh.shelterRepo.GetByID(id)
 	if err != nil {
-		c.JSON(statusByError(err), gin.H{"error": err.Error()})
+		respondRepositoryError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, shelter)
+	c.JSON(http.StatusOK, mapper.ShelterResponse(shelter))
 }
 
 // Create godoc
@@ -69,26 +71,26 @@ func (sh *ShelterHandler) GetByID(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security ApiKeyAuth
-// @Param shelter body models.Shelter true "Shelter"
-// @Success 201 {object} models.Shelter
-// @Failure 400 {object} models.ErrorResponse
-// @Failure 401 {object} models.ErrorResponse
-// @Failure 500 {object} models.ErrorResponse
+// @Param shelter body dto.ShelterRequest true "Shelter"
+// @Success 201 {object} dto.ShelterResponse
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 401 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
 // @Router /shelters [post]
 func (sh *ShelterHandler) Create(c *gin.Context) {
-	var shelter models.Shelter
-	if err := c.BindJSON(&shelter); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid shelter JSON: " + err.Error()})
+	var request dto.ShelterRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "invalid request body"})
 		return
 	}
 
-	shelter, err := sh.shelterRepo.Create(shelter)
+	shelter, err := sh.shelterRepo.Create(mapper.ShelterFromRequest(request))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		respondRepositoryError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusCreated, shelter)
+	c.JSON(http.StatusCreated, mapper.ShelterResponse(shelter))
 }
 
 // Update godoc
@@ -98,12 +100,13 @@ func (sh *ShelterHandler) Create(c *gin.Context) {
 // @Produce json
 // @Security ApiKeyAuth
 // @Param id path int true "Shelter ID"
-// @Param shelter body models.Shelter true "Shelter"
-// @Success 200 {object} models.Shelter
-// @Failure 400 {object} models.ErrorResponse
-// @Failure 401 {object} models.ErrorResponse
-// @Failure 404 {object} models.ErrorResponse
-// @Failure 500 {object} models.ErrorResponse
+// @Param shelter body dto.ShelterRequest true "Shelter"
+// @Success 200 {object} dto.ShelterResponse
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 401 {object} dto.ErrorResponse
+// @Failure 404 {object} dto.ErrorResponse
+// @Failure 409 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
 // @Router /shelters/{id} [put]
 func (sh *ShelterHandler) Update(c *gin.Context) {
 	id, valid := idParam(c)
@@ -111,19 +114,30 @@ func (sh *ShelterHandler) Update(c *gin.Context) {
 		return
 	}
 
-	var shelter models.Shelter
-	if err := c.BindJSON(&shelter); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid shelter JSON: " + err.Error()})
+	var request dto.ShelterRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "invalid request body"})
 		return
 	}
 
+	cats, err := sh.catRepo.GetCatsByShelterID(id)
+	if err != nil {
+		respondRepositoryError(c, err)
+		return
+	}
+	if uint64(len(cats)) > request.Capacity {
+		respondRepositoryError(c, const_errors.CapacityBelowUsage)
+		return
+	}
+
+	shelter := mapper.ShelterFromRequest(request)
 	if err := sh.shelterRepo.Update(id, shelter); err != nil {
-		c.JSON(statusByError(err), gin.H{"error": err.Error()})
+		respondRepositoryError(c, err)
 		return
 	}
 
 	shelter.ID = id
-	c.JSON(http.StatusOK, shelter)
+	c.JSON(http.StatusOK, mapper.ShelterResponse(shelter))
 }
 
 // Delete godoc
@@ -132,10 +146,11 @@ func (sh *ShelterHandler) Update(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Param id path int true "Shelter ID"
 // @Success 204
-// @Failure 400 {object} models.ErrorResponse
-// @Failure 401 {object} models.ErrorResponse
-// @Failure 404 {object} models.ErrorResponse
-// @Failure 500 {object} models.ErrorResponse
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 401 {object} dto.ErrorResponse
+// @Failure 404 {object} dto.ErrorResponse
+// @Failure 409 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
 // @Router /shelters/{id} [delete]
 func (sh *ShelterHandler) Delete(c *gin.Context) {
 	id, valid := idParam(c)
@@ -144,7 +159,7 @@ func (sh *ShelterHandler) Delete(c *gin.Context) {
 	}
 
 	if err := sh.shelterRepo.Delete(id); err != nil {
-		c.JSON(statusByError(err), gin.H{"error": err.Error()})
+		respondRepositoryError(c, err)
 		return
 	}
 
@@ -156,12 +171,13 @@ func (sh *ShelterHandler) Delete(c *gin.Context) {
 // @Tags shelters
 // @Security ApiKeyAuth
 // @Success 204
-// @Failure 401 {object} models.ErrorResponse
-// @Failure 500 {object} models.ErrorResponse
+// @Failure 401 {object} dto.ErrorResponse
+// @Failure 409 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
 // @Router /shelters [delete]
 func (sh *ShelterHandler) DeleteAll(c *gin.Context) {
 	if err := sh.shelterRepo.DeleteAll(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		respondRepositoryError(c, err)
 		return
 	}
 
@@ -173,10 +189,10 @@ func (sh *ShelterHandler) DeleteAll(c *gin.Context) {
 // @Tags shelters
 // @Produce json
 // @Param id path int true "Shelter ID"
-// @Success 200 {array} models.Cat
-// @Failure 400 {object} models.ErrorResponse
-// @Failure 404 {object} models.ErrorResponse
-// @Failure 500 {object} models.ErrorResponse
+// @Success 200 {array} dto.CatResponse
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 404 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
 // @Router /shelters/{id}/cats [get]
 func (sh *ShelterHandler) GetCats(c *gin.Context) {
 	id, valid := idParam(c)
@@ -185,15 +201,15 @@ func (sh *ShelterHandler) GetCats(c *gin.Context) {
 	}
 
 	if _, err := sh.shelterRepo.GetByID(id); err != nil {
-		c.JSON(statusByError(err), gin.H{"error": err.Error()})
+		respondRepositoryError(c, err)
 		return
 	}
 
 	cats, err := sh.catRepo.GetCatsByShelterID(id)
 	if err != nil {
-		c.JSON(statusByError(err), gin.H{"error": err.Error()})
+		respondRepositoryError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, cats)
+	c.JSON(http.StatusOK, mapper.CatResponses(cats))
 }

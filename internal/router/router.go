@@ -8,12 +8,14 @@ import (
 	"cp_lab1/internal/handlers"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func New(cfg *config.Config, app *app.App) (*gin.Engine, error) {
 	gin.SetMode(cfg.GinMode)
+	binding.EnableDecoderDisallowUnknownFields = true
 
 	ge := gin.New()
 	if err := ge.SetTrustedProxies(nil); err != nil {
