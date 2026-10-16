@@ -15,13 +15,13 @@ paths:
           content:
             "*/*":
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "500":
           description: Internal Server Error
           content:
             "*/*":
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
       security:
         - ApiKeyAuth: []
       summary: Delete all cats
@@ -35,45 +35,51 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: "#/components/schemas/models.Cat"
+                  $ref: "#/components/schemas/dto.CatResponse"
                 type: array
         "500":
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
       summary: Get all cats
       tags:
         - cats
     post:
       requestBody:
-        $ref: "#/components/requestBodies/models.Cat"
+        $ref: "#/components/requestBodies/dto.CatRequest"
       responses:
         "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.Cat"
+                $ref: "#/components/schemas/dto.CatResponse"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "500":
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
       security:
         - ApiKeyAuth: []
       summary: Create cat
@@ -96,25 +102,25 @@ paths:
           content:
             "*/*":
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "401":
           description: Unauthorized
           content:
             "*/*":
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "404":
           description: Not Found
           content:
             "*/*":
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "500":
           description: Internal Server Error
           content:
             "*/*":
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
       security:
         - ApiKeyAuth: []
       summary: Delete cat
@@ -134,25 +140,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.Cat"
+                $ref: "#/components/schemas/dto.CatResponse"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "500":
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
       summary: Get cat by ID
       tags:
         - cats
@@ -165,38 +171,44 @@ paths:
           schema:
             type: integer
       requestBody:
-        $ref: "#/components/requestBodies/models.Cat"
+        $ref: "#/components/requestBodies/dto.CatRequest"
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.Cat"
+                $ref: "#/components/schemas/dto.CatResponse"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "500":
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
       security:
         - ApiKeyAuth: []
       summary: Update cat
@@ -212,13 +224,19 @@ paths:
           content:
             "*/*":
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
+        "409":
+          description: Conflict
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "500":
           description: Internal Server Error
           content:
             "*/*":
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
       security:
         - ApiKeyAuth: []
       summary: Delete all shelters
@@ -232,45 +250,45 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: "#/components/schemas/models.Shelter"
+                  $ref: "#/components/schemas/dto.ShelterResponse"
                 type: array
         "500":
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
       summary: Get all shelters
       tags:
         - shelters
     post:
       requestBody:
-        $ref: "#/components/requestBodies/models.Shelter"
+        $ref: "#/components/requestBodies/dto.ShelterRequest"
       responses:
         "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.Shelter"
+                $ref: "#/components/schemas/dto.ShelterResponse"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "500":
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
       security:
         - ApiKeyAuth: []
       summary: Create shelter
@@ -293,25 +311,31 @@ paths:
           content:
             "*/*":
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "401":
           description: Unauthorized
           content:
             "*/*":
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "404":
           description: Not Found
           content:
             "*/*":
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
+        "409":
+          description: Conflict
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "500":
           description: Internal Server Error
           content:
             "*/*":
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
       security:
         - ApiKeyAuth: []
       summary: Delete shelter
@@ -331,25 +355,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.Shelter"
+                $ref: "#/components/schemas/dto.ShelterResponse"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "500":
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
       summary: Get shelter by ID
       tags:
         - shelters
@@ -362,38 +386,44 @@ paths:
           schema:
             type: integer
       requestBody:
-        $ref: "#/components/requestBodies/models.Shelter"
+        $ref: "#/components/requestBodies/dto.ShelterRequest"
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.Shelter"
+                $ref: "#/components/schemas/dto.ShelterResponse"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "500":
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
       security:
         - ApiKeyAuth: []
       summary: Update shelter
@@ -415,26 +445,26 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: "#/components/schemas/models.Cat"
+                  $ref: "#/components/schemas/dto.CatResponse"
                 type: array
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
         "500":
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/models.ErrorResponse"
+                $ref: "#/components/schemas/dto.ErrorResponse"
       summary: Get shelter cats
       tags:
         - shelters
@@ -442,18 +472,18 @@ servers:
   - url: //localhost:8080/api/v1
 components:
   requestBodies:
-    models.Cat:
+    dto.CatRequest:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/models.Cat"
+            $ref: "#/components/schemas/dto.CatRequest"
       description: Cat
       required: true
-    models.Shelter:
+    dto.ShelterRequest:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/models.Shelter"
+            $ref: "#/components/schemas/dto.ShelterRequest"
       description: Shelter
       required: true
   securitySchemes:
@@ -462,11 +492,36 @@ components:
       name: X-API-Key
       type: apiKey
   schemas:
-    models.Cat:
+    dto.CatRequest:
       properties:
         adopted:
           type: boolean
-        age:
+        ageMonths:
+          maximum: 360
+          type: integer
+        gender:
+          enum:
+            - male
+            - female
+          type: string
+        name:
+          maxLength: 100
+          minLength: 1
+          type: string
+        shelterID:
+          minimum: 1
+          type: integer
+      required:
+        - ageMonths
+        - gender
+        - name
+        - shelterID
+      type: object
+    dto.CatResponse:
+      properties:
+        adopted:
+          type: boolean
+        ageMonths:
           type: integer
         gender:
           type: string
@@ -477,12 +532,35 @@ components:
         shelterID:
           type: integer
       type: object
-    models.ErrorResponse:
+    dto.ErrorResponse:
       properties:
         error:
           type: string
       type: object
-    models.Shelter:
+    dto.ShelterRequest:
+      properties:
+        address:
+          maxLength: 200
+          minLength: 1
+          type: string
+        capacity:
+          minimum: 1
+          type: integer
+        city:
+          maxLength: 100
+          minLength: 1
+          type: string
+        name:
+          maxLength: 100
+          minLength: 1
+          type: string
+      required:
+        - address
+        - capacity
+        - city
+        - name
+      type: object
+    dto.ShelterResponse:
       properties:
         address:
           type: string
